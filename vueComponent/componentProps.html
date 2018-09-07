@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue组件</title>
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <input type="text" v-model="parentMessage">
+        <my-component message="来自父组件的数据" name-rule="转换成驼峰命名法" :parent-data="parentMessage"></my-component>
+    </div>
+    <hr>
+    <div id="app">
+        <other-component message="[1,2,3]"></other-component>
+        <other-component :message="[1,2,3]"></other-component>
+    </div>
+    <hr>
+    <div id="app1">
+        <single-component :init-count="1"></single-component>
+    </div>
+    <hr>
+    <div id="app2">
+        <el-component :width="100"></el-component>
+    </div>
+    <hr>
+    <div id="app3">
+        <ver-component></ver-component>
+    </div>
+
+
+    <script>
+        Vue.component('my-component', {
+            props: ['message', 'nameRule', 'parentData'],
+            template: '<div>元素父组件数据：{{message}} 和命名转换的数据： {{nameRule}} 和可输入组件父级的数据： {{parentData}}</div>'
+        });
+
+        new Vue({
+            el: '#root',
+            data: {
+                parentMessage: ''
+            }
+        })
+
+        //使用v-bind和不使用的区别
+        Vue.component('other-component', {
+            props: ['message'],
+            template: '<div>{{message.length}}</div>'
+        });
+
+        new Vue({
+            el: '#app'
+        });
+
+        //单向数据流 自数据修改不会影响父数据
+        Vue.component('single-component', {
+            props: ['initCount'],
+            template: '<div>{{count}}</div>',
+            data: function(){
+                return {
+                    count: this.initCount
+                }
+            }
+        });
+        new Vue({
+            el: '#app1'
+        })
+
+        //子数据作为初始值需要变更
+        Vue.component('el-component',{
+            props: ['width'],
+            template: '<div :style="style">组件内容</div>',
+            computed: {
+                style: function(){
+                    return {
+                        width: this.width + 'px'
+                    }
+                }
+            }
+        })
+         new Vue({
+             el: '#app2'
+         });
+
+        //组件数据验证
+        Vue.component('ver-component',{
+            props: {
+                propA: Number,
+                propB: [String, Number], //字符串或数字类型
+                propC: {
+                    type: Boolean,
+                    default: true    //类型布尔，默认是true
+                },
+                propD: {
+                    type: Number,
+                    required: true    //类型数字，必须传入
+                },
+                propE: {
+                    type: Array,
+                    default: function(){    //如果是数组或者对象，默认必须是一个函数返回
+                        return [];
+                    }
+                },
+                propF: {
+                    validator: function(value){
+                        return value > 10;    //自定义验证
+                    }
+                }
+
+            }
+        });
+    </script>
+</body>
+</html>

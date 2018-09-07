@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>vue入门</title>
+    <script type="text/javascript" src="js/vue.js" ></script>
+</head>
+<body>
+<div id="root">
+    <h4>单选使用</h4>
+    <label>单个选择</label>
+    <select v-model="selected">
+        <option value="html">HTML</option>
+        <option value="js">JS</option>
+        <option value="css">CSS</option>
+    </select>
+    <p>目前状态是： {{selected}}</p>
+    <br />
+
+    <hr />
+    <h4>多选使用</h4>
+    <label>多个选择</label>
+    <select v-model="selected1" multiple>
+        <option value="html">HTML</option>
+        <option value="js">JS</option>
+        <option value="css">CSS</option>
+        <option value="vue">VUE</option>
+    </select>
+    <p>目前状态是： {{selected1}}</p>
+</div>
+
+<script>
+    new Vue({
+        el: "#root",
+        data: {
+            selected: 'css',
+            selected1: ['js','vue']
+        }
+    })
+</script>
+</body>
+</html>

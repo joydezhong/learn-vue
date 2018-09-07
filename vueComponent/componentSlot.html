@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue组件</title>
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+<body>
+    <h1>父组件作用域</h1>
+    <div id="app">
+        <child-component v-show="showChild"></child-component>
+    </div>
+    <hr>
+    <h1>子组件作用域</h1>
+    <div id="app1">
+        <component-a></component-a>
+    </div>
+    <hr>
+    <h1>单个slot</h1>
+    <div id="app2">
+        <component-b>
+            <p>分发的内容</p>
+            <p>更多分发的内容</p>
+        </component-b>
+    </div>
+    <hr>
+    <h1>具名slot</h1>
+    <div id="app3">
+        <component-c>
+            <h2 slot="header">标题</h2>
+            <p>正文内容</p>
+            <p>更多的正文内容</p>
+            <div slot="footer">底部信息</div>
+        </component-c>
+    </div>
+    <hr>
+    <h1>作用域插槽</h1>
+    <div id="app4">
+        <component-d>
+            <template scope="props">
+                <p>来自父组件的内容</p>
+                <p>{{ props.msg }}</p>
+            </template>
+        </component-d>
+    </div>
+    <hr>
+    <h1>列表组件 自定义渲染</h1>
+    <div id="app5">
+        <my-list :books="books">
+            <!--作用域插槽也可以是具名的slot-->
+            <template slot="book" scope="props">
+                <li>{{props.bookName}}</li>
+            </template>
+        </my-list>
+    </div>
+    <hr>
+    <h1>访问slot</h1>
+    <div id="app6">
+        <component-e>
+            <h2 slot="header">标题</h2>
+            <p>正文内容</p>
+            <p>更多正文内容</p>
+            <div slot="footer">底部信息</div>
+        </component-e>
+    </div>
+
+
+    <script>
+        //父组件作用域
+        Vue.component('child-component',{
+            template: '<div>子组件</div>'
+        });
+        new Vue({
+            el: '#app',
+            data: {
+                showChild: true
+            }
+        });
+
+        //子组件作用域
+        Vue.component('component-a',{
+            template: '<div><span v-show="showSpan">666</span><p>子组件</p></div>',
+            data: function(){
+                return {
+                    showSpan: true
+                }
+            }
+        });
+        new Vue({
+            el: '#app1'
+        });
+
+        //单个slot
+        Vue.component('component-b',{
+            template: '<div><slot><p>如果父组件没有插入内容，这就是默认内容</p></slot></div>'
+        })
+        new Vue({
+            el: '#app2'
+        })
+
+        //具名slot
+        Vue.component('component-c',{
+            template: '<div class="container">' +
+                        '<div class="header"><slot name="header"></slot></div>' +
+                        '<div class="main"><slot></slot></div>' +
+                        '<div class="footer"><slot name="footer"></slot></div>' +
+                    '</div>'
+        });
+        new Vue({
+            el: '#app3'
+        })
+
+        //作用域插槽
+        Vue.component('component-d',{
+            template: '<div class="container"><slot msg="来自子组件的内容"></slot></div>'
+        })
+        new Vue({
+            el: '#app4'
+        })
+
+        //列表组件 自定义渲染
+        Vue.component('my-list',{
+            props: {
+                books: {
+                    type: Array,
+                    default: function(){
+                        return [];
+                    }
+                }
+            },
+            template: '<ul><slot name="book" v-for="book in books" :book-name="book.name"></slot></ul>'
+        })
+        new Vue({
+            el: '#app5',
+            data: {
+                books: [
+                    {name: '《Vue.js实战》'},
+                    {name: '《JavaScript语言精粹》'},
+                    {name: '《JavaScript高级程序设计》'}
+                ]
+            }
+        })
+
+        //访问信息
+        Vue.component('component-e', {
+            template: '<div class="container">' +
+                '<div class="header"><slot name="header"></slot></div>' +
+                '<div class="main"><slot></slot></div>' +
+                 '<div class="footer"><slot name="footer"></slot></div>' +
+                '</div>',
+            mounted: function(){
+                var header = this.$slots.header;
+                var main = this.$slots.default;
+                var footer = this.$slots.footer;
+                console.log(footer);
+                console.log(footer[0].elm.innerHTML);
+            }
+        });
+        new Vue({
+            el: '#app6'
+        });
+    </script>
+</body>
+</html>

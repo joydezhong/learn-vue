@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue自定义指令--下拉组件</title>
+    <link rel="stylesheet" href="../css/demo1.css" />
+
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div class="main" v-clickoutside="handleClose">
+            <button @click="show = !show">点击显示下拉菜单</button>
+            <div class="dropdown" v-show="show">
+                <p>下拉框的内容，点击外部可隐藏</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript" src="../js/vue.js"></script>
+    <script type="text/javascript" src="../js/demo1.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                show: false
+            },
+            methods: {
+                handleClose: function(){
+                    this.show = false;
+                }
+            }
+        })
+    </script>
+</body>
+</html>

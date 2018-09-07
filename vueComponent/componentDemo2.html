@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组件实战--标签页</title>
+    <link rel="stylesheet" href="../css/tabs.css">
+</head>
+<body>
+    <div id="app" v-cloak>
+        <tabs v-model="activeKey">
+            <pane label="标签一" name="1">
+                标签一内容
+            </pane>
+            <pane label="标签二" name="2">
+                标签二内容
+            </pane>
+            <pane label="标签三" name="3">
+                标签三内容
+            </pane>
+        </tabs>
+    </div>
+
+    <script type="text/javascript" src="../js/vue.js"></script>
+    <script type="text/javascript" src="../js/pane.js"></script>
+    <script type="text/javascript" src="../js/tabs.js"></script>
+    <script type="text/javascript">
+        var app = new Vue({
+            el: '#app',
+            data: {
+                activeKey: '1'
+            }
+        })
+    </script>
+</body>
+</html>

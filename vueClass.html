@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>vue入门</title>
+        <script type="text/javascript" src="js/vue.js" ></script>
+        <style>
+            .red{
+                color: red;
+            }
+            .bold{
+                font-weight: bold;
+            }
+            .lager{
+                font-size: 40px;
+            }
+            .active{
+                cursor: pointer;
+            }
+            .error{
+                color: yellow;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root" :class="{'red': isred, 'bold': isbold}">
+            字体颜色样式
+        </div>
+
+        <!--computed加持-->
+        <p id="app1" :class="classes">复杂样式计算属性加持</p>
+
+        <!--数组语法加持-->
+        <p id="app2" :class="[isActive?activeCls:'', errorCls]">数组语法加持</p>
+
+        <!--在组件中使用-->
+        <div id="app3">
+            <my-component :class="{ 'active': isActive }"></my-component>
+        </div>
+
+        <!--内联样式-->
+        <p id="app4" :style="styles">内联样式加持</p>
+
+
+        <script>
+            new Vue({
+                el: "#root",
+                data: {
+                    isred: true,
+                    isbold: true
+                }
+            })
+
+        //    计算属性加持
+            new Vue({
+                el: '#app1',
+                data: {
+                    isred: null,
+                    isbold: true,
+                    islager: true
+                },
+                computed: {
+                    classes: function(){
+                        return {
+                            red: this.isbold && !this.isred,
+                            lager: this.islager && this.isred === 'fail'
+                        }
+                    }
+                }
+            })
+
+        //    数组语法加持
+            new Vue({
+                el: '#app2',
+                data: {
+                    isActive: true,
+                    activeCls: 'active',
+                    errorCls: 'error'
+                }
+            })
+
+        //    在组件中使用
+            Vue.component('my-component', {
+                template: '<p class="article">组件的一些文本</p>'
+            });
+            new Vue({
+                el: '#app3',
+                data: {
+                    isActive: true
+                }
+            })
+
+        //    内联样式加持
+            new Vue({
+                el: '#app4',
+                data: {
+                    styles: {
+                        color: 'blue',
+                        fontSize: 20 + 'px'
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>

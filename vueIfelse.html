@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>vue入门</title>
+        <script type="text/javascript" src="js/vue.js" ></script>
+    </head>
+    <body>
+        <div id="root">
+            <template v-if="type==='name'">
+                <label>用户名：</label>
+                <input type="text" placeholder="输入用户名" key="name-input">
+            </template>
+            <template v-else>
+                <label>邮箱：</label>
+                <input type="email" placeholder="输入邮箱" key="email-input">
+            </template>
+            <button @click="handleToggleClick">切换类型</button>
+        </div>
+        <!--key属性 代表唯一 可以防止vue组件元素的复用-->
+        <script>
+            new Vue({
+                el: "#root",
+                data: {
+                    type: 'name'
+                },
+                methods: {
+                    handleToggleClick: function(){
+                        this.type = this.type === 'name' ? 'email' : 'name';
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>

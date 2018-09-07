@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>vue入门</title>
+        <script type="text/javascript" src="js/vue.js" ></script>
+    </head>
+    <body>
+        <div id="root">
+            <input type="text" v-model="filterField">
+            <button @click="handleFilter(filterField)">搜索</button>
+            <ul>
+                <template v-for="book in books">
+                    <li>书名：{{book.name}}，作者：{{book.author}}</li>
+                </template>
+            </ul>
+        </div>
+
+        <script>
+            new Vue({
+                el: "#root",
+                data: {
+                    books: [
+                        {
+                            name: '《Vue.js实战》',
+                            author: '梁萦'
+                        },
+                        {
+                            name: '《JavaScript语言精粹》',
+                            author: '刀哥普拉斯'
+                        },
+                        {
+                            name: '《JavaScript高级程序设计》',
+                            author: '佘本莎'
+                        }
+                    ],
+                    filterField: ''
+                },
+                methods: {
+                    handleFilter: function(v){
+                        this.books =  this.books.filter(function(book){
+                            return book.name.match(v);
+                        })
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>

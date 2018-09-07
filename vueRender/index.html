@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue进阶--render函数</title>
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+<body>
+    <!--template的写法-->
+    <h6>一般写法</h6>
+    <div id="app">
+        <anchor :level="2" title="特性2">特性2</anchor>
+        <anchor :level="4" title="特性4">特性4</anchor>
+        <anchor :level="6" title="特性6">特性6</anchor>
+
+        <script type="text/x-template" id="anchor">
+            <div>
+                <h1 v-if="level === 1">
+                    <a :href="'#' + title">
+                        <slot></slot>
+                    </a>
+                </h1>
+                <h2 v-if="level === 2">
+                    <a :href="'#' + title">
+                        <slot></slot>
+                    </a>
+                </h2>
+                <h3 v-if="level === 3">
+                    <a :href="'#' + title">
+                        <slot></slot>
+                    </a>
+                </h3>
+                <h4 v-if="level === 4">
+                    <a :href="'#' + title">
+                        <slot></slot>
+                    </a>
+                </h4>
+                <h5 v-if="level === 5">
+                    <a :href="'#' + title">
+                        <slot></slot>
+                    </a>
+                </h5>
+                <h6 v-if="level === 6">
+                    <a :href="'#' + title">
+                        <slot></slot>
+                    </a>
+                </h6>
+            </div>
+        </script>
+    </div>
+
+    <hr>
+    <!--render写法-->
+    <div id="app2">
+        <anchor-render :level="2" title="特征2">特征2</anchor-render>
+    </div>
+
+
+    <script>
+        Vue.component('anchor',{
+            template: '#anchor',
+            props: {
+                level: {
+                    type: Number,
+                    required: true
+                },
+                title: {
+                    type: String,
+                    default: ''
+                }
+            }
+        });
+        new Vue({
+            el: '#app'
+        })
+
+    //    使用render函数
+        Vue.component('anchor-render',{
+            props: {
+                level: {
+                    type: Number,
+                    required: true
+                },
+                title: {
+                    type: String,
+                    default: ''
+                }
+            },
+            render: function(createElement){
+                return createElement('h'+this.level, [
+                    createElement('a', {
+                        domProps: {
+                            href: '#'+this.title
+                        }
+                    }, this.$slots.default)
+                ]);
+            }
+        })
+        new Vue({
+            el: '#app2'
+        })
+    </script>
+</body>
+</html>

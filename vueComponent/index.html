@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue组件</title>
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <my-component></my-component>
+    </div>
+
+    <div id="app">
+        <my-component></my-component>
+    </div>
+
+    <div id="app1">
+        <table>
+            <tbody is="my-component"></tbody>
+        </table>
+    </div>
+
+    <div id="app2">
+        <other-component></other-component>
+    </div>
+
+    <div id="app3">
+        <obj-component></obj-component>
+        <obj-component></obj-component>
+        <obj-component></obj-component>
+    </div>
+
+    <script type="text/javascript">
+        //全局组件
+        Vue.component('my-component', {
+            template: '<div>这里是组件的内容</div>'
+        });
+
+        new Vue({
+            el: '#root'
+        });
+
+        //局部组件
+        var Child = {
+            template: '<div>局部注册的组件内容</div>'
+        };
+
+        new Vue({
+            el: '#app',
+            components: {
+                'my-component': Child
+            }
+        });
+
+        //vue模板受html限制 使用is挂载
+        new Vue({
+            el: '#app1'
+        });
+
+
+        //组件中的其他配置
+        Vue.component('other-component', {
+            template: '<div>{{message}}</div>',
+            data: function(){
+                return {
+                    message: '组件data内容'
+                }
+            }
+        });
+        new Vue({
+            el: '#app2'
+        })
+
+        //组件中对象的引用关系
+        var data = { counter: 0 };
+
+        Vue.component('obj-component', {
+            template: '<button @click="counter++">{{counter}}</button>',
+            data: function(){
+                return { counter: 0 };
+            }
+        });
+        new Vue({
+            el: '#app3'
+        })
+
+    </script>
+</body>
+</html>

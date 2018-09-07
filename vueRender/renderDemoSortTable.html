@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue进阶--render实战--可进行排序的table组件</title>
+    <link rel="stylesheet" href="../css/sortTable.css" />
+</head>
+<body>
+    <div id="app" v-cloak>
+        <v-table :data="data" :columns="columns"></v-table>
+        <button @click="handleAddData">添加数据</button>
+    </div>
+
+    <script type="text/javascript" src="../js/vue.js"></script>
+    <script type="text/javascript" src="../js/sortTable.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                columns: [
+                    {
+                        title: '姓名',
+                        key: 'name'
+                    },
+                    {
+                        title: '年龄',
+                        key: 'age',
+                        sortTable: true
+                    },
+                    {
+                        title: '出生年月',
+                        key: 'birthday',
+                        sortTable: true
+                    },
+                    {
+                        title: '地址',
+                        key: 'address'
+                    }
+                ],
+                data: [
+                    {
+                        name: '王二小',
+                        age: 15,
+                        birthday: '1994-02-05',
+                        address: '日本东京湾八里香'
+                    },
+                    {
+                        name: '马冬梅',
+                        age: 32,
+                        birthday: '1984-06-21',
+                        address: '贵州南泥湾大道'
+                    },
+                    {
+                        name: '雨来',
+                        age: 9,
+                        birthday: '1999-12-05',
+                        address: '南京香雪公园'
+                    },
+                    {
+                        name: '夏洛',
+                        age: 43,
+                        birthday: '1976-05-30',
+                        address: '赣州郁孤台'
+                    }
+                ]
+            },
+            methods: {
+                handleAddData: function(){
+                    this.data.push({
+                        name: '刘小天',
+                        age: 45,
+                        birthday: '1998-11-21',
+                        address: '北京市紫荆城宣武门'
+                    });
+                }
+            }
+        })
+    </script>
+</body>
+</html>

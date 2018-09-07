@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue组件</title>
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+<body>
+    <!--组件高级用法-->
+    <h1>递归组件</h1>
+    <div id="app1">
+        <component-a :count="1"></component-a>
+    </div>
+    <hr>
+    <!--内联模板-->
+    <div id="app2">
+        <component-b :message="message" inline-template>
+            <div>
+                <h2>在父组件中定义子组件</h2>
+                <p>{{message}}</p>
+                <p>{{msg}}</p>
+            </div>
+        </component-b>
+    </div>
+    <hr>
+    <!--动态组件-->
+    <div id="app3">
+        <component-c :is="currentView"></component-c>
+        <button @click="handleChangeView('A')">切换到A</button>
+        <button @click="handleChangeView('B')">切换到B</button>
+        <button @click="handleChangeView('C')">切换到C</button>
+    </div>
+    <hr>
+    <!--异步组件-->
+    <div id="app4">
+        <component-d></component-d>
+    </div>
+    <!--其他-->
+    <!--$nextTick-->
+    <hr>
+    <div id="app5">
+        <div id="div" v-if="showDiv">这是一段文本</div>
+        <button @click="getText">获取的div内容</button>
+    </div>
+    <!--X-Templates-->
+    <hr>
+    <div id="app6">
+        <component-e></component-e>
+        <script type="text/x-template" id="my-component">
+            <div>这是组件的内容</div>
+        </script>
+    </div>
+    <!--手动挂载-->
+    <hr>
+    <div id="mount-div">
+
+    </div>
+
+    <script>
+        // <!--递归组件-->
+        Vue.component('component-a',{
+            name: 'component-a',
+            props: {
+                count: {
+                    type: Number,
+                    default: 1
+                }
+            },
+            template: '<div class="child"><component-a :count="count+1" v-if="count<3"></component-a></div>'
+        });
+        new Vue({
+            el: '#app1'
+        });
+
+    //    内联模板
+        Vue.component('component-b', {
+            props: ['message'],
+            data: function () {
+                return {
+                    msg: '在子组件中声明数据'
+                }
+            }
+        })
+        new Vue({
+            el: '#app2',
+            data: {
+                message: '父组件内容'
+            }
+        })
+
+    //    动态组件
+        new Vue({
+            el: '#app3',
+            components: {
+                comA: {
+                    template: '<div>组件A</div>'
+                },
+                comB: {
+                    template: '<div>组件B</div>'
+                },
+                comC: {
+                    template: '<div>组件C</div>'
+                }
+            },
+            data: {
+                currentView: 'comA'
+            },
+            methods: {
+                handleChangeView: function(component){
+                    this.currentView = 'com' + component;
+                }
+            }
+        })
+
+    //    异步组件
+        Vue.component('component-d', function (resolve, reject){
+            window.setTimeout(function(){
+                resolve({
+                    template: '<div>我是2s后异步渲染的</div>'
+                });
+            }, 2000);
+        });
+        new Vue({
+            el: '#app4'
+        })
+
+        // <!--其他-->
+    //  $nextTick
+        new Vue({
+            el: '#app5',
+            data: {
+                showDiv: false
+            },
+            methods: {
+                getText: function(){
+                    this.showDiv = true;
+                    this.$nextTick(function(){
+                        var text = document.getElementById('div').innerHTML;
+                        console.log(text);
+                    })
+                    //也可以通过传入event执行
+                }
+            }
+        });
+
+    //    X-Templates
+        Vue.component('component-e',{
+            template: '#my-component'
+        });
+        new Vue({
+            el: '#app6'
+        })
+
+    //    手动挂载
+        var MyComponent = Vue.extend({
+            template: '<div>Hello: {{ name }}</div>',
+            data: function(){
+                return {
+                    name: 'Aresn'
+                }
+            }
+        })
+        new MyComponent().$mount('#mount-div');
+        //或者
+        // new MyComponent({
+        //     el: '#mount-div'
+        // })
+    </script>
+</body>
+</html>

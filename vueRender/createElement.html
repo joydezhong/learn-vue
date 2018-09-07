@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue进阶--createElement用法</title>
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+<body>
+    <!--template写法-->
+    <h6>template写法</h6>
+    <div id="app">
+        <ele></ele>
+    </div>
+    <hr>
+    <!--render改写-->
+    <h6>render改写</h6>
+    <div id="app2">
+        <ele-render></ele-render>
+    </div>
+    <hr>
+    <!--重复渲染多个组件-->
+    <h6>重复渲染多个组件</h6>
+    <div id="app3">
+        <ele-more></ele-more>
+    </div>
+    <hr>
+    <!--重复渲染多个组件含slot-->
+    <h6>重复渲染多个组件含slot</h6>
+    <div id="app4">
+        <ele-slot>
+            <div>
+                <Childd></Childd>
+            </div>
+        </ele-slot>
+    </div>
+    <hr>
+    <!--用javascript代替模板-->
+    <h6>用javascript代替模板v-if v-else v-for</h6>
+    <div id="app5">
+        <elejs :show="show"></elejs>
+        <button @click="show = !show">切换显示</button>
+    </div>
+    <div id="app6">
+        <elefor :list="list"></elefor>
+    </div>
+    <div id="app7">
+        <elelist :list="list"></elelist>
+        <button @click="handleClick">显示列表</button>
+    </div>
+    <hr>
+    <!--用javascript代替模板-->
+    <h6>用javascript代替模板v-model</h6>
+    <div id="app8">
+        <elemodel></elemodel>
+    </div>
+
+    <script>
+        Vue.component('ele', {
+            template: '<div id="element" :class="{show: show}" @click="handleClick">文本内容</div>',
+            data: function(){
+                return {
+                    show: true
+                }
+            },
+            methods: {
+                handleClick: function(){
+                    console.log('clicked!');
+                }
+            }
+        });
+        new Vue({
+            el: '#app'
+        })
+
+    //    render改写
+        Vue.component('ele-render',{
+            render: function(createElement){
+                return createElement('div', {
+                    //动态绑定class 同:class
+                    class: {
+                        'show': this.show
+                    },
+                    //普通html特性
+                    attrs: {
+                        id: 'element'
+                    },
+                    //给div绑定click事件
+                    on: {
+                        click: this.handleClick
+                    }
+                }, '文本内容')
+            },
+            data: function(){
+                return {
+                    show: true
+                }
+            },
+            methods: {
+                handleClick: function(){
+                    console.log('clicked!');
+                }
+            }
+        })
+        new Vue({
+            el: '#app2'
+        })
+
+    //    重复渲染多个组件
+        //局部组件
+        var Child = {
+            render: function(createElement){
+                return createElement('p', '段落内容');
+            }
+        }
+        Vue.component('ele-more',{
+            render: function(createElement){
+                return createElement('div', Array.apply(null, {length: 5}).map(function(){
+                    return createElement(Child);
+                }));
+            }
+        });
+        new Vue({
+            el: '#app3'
+        });
+
+    //    重复渲染组件含slot
+        Vue.component('Childd', {
+            render: function(createElement){
+                return createElement('p', '段落内容');
+            }
+        });
+        Vue.component('ele-slot',{
+            render: function (createElement) {
+                //克隆slot节点的方法
+                function cloneVNode(vnode){
+                    //遍历所有节点并克隆
+                    const clonedChildren = vnode.children && vnode.children.map(function(vnode){
+                        return cloneVNode(vnode);
+                    })
+                    const cloned = createElement(vnode.tag, vnode.data, clonedChildren);
+                    cloned.text = vnode.text;
+                    cloned.isComment = vnode.isComment;
+                    cloned.componentOptions = vnode.componentOptions;
+                    cloned.elm = vnode.elm;
+                    cloned.context = vnode.context;
+                    cloned.ns = vnode.ns;
+                    cloned.isStatic = vnode.isStatic;
+                    cloned.key = vnode.key;
+                    return cloned;
+                }
+                const vNodes = this.$slots.default;
+                const clonedVNodes = vNodes.map(function(vnode){
+                    return cloneVNode(vnode);
+                });
+
+                return createElement('div', [
+                    vNodes,
+                    clonedVNodes
+                ]);
+            }
+        });
+        new Vue({
+            el: '#app4'
+        })
+
+    //   用javascript代替模板v-if v-else v-for
+        Vue.component('elejs',{
+            render: function(createElement){
+                if(this.show){
+                    return createElement('p', 'show值为true');
+                }else{
+                    return createElement('p', 'show值为false');
+                }
+            },
+            props: {
+                show: {
+                    type: Boolean,
+                    default: false
+                }
+            }
+        });
+        new Vue({
+            el: '#app5',
+            data: {
+                show: false
+            }
+        })
+        Vue.component('elefor', {
+            render: function(createElement){
+                var nodes = [];
+                for(var i =0; i < this.list.length; i++){
+                    nodes.push(createElement('p', this.list[i]));
+                }
+                return createElement('div', nodes);
+            },
+            props: {
+                list: {
+                    type: Array
+                }
+            }
+        });
+        new Vue({
+            el: "#app6",
+            data: {
+                list: [
+                    '《vue.js实战》',
+                    '《JavaScript 高级程序设计》',
+                    '《JavaScript 语言精髓》'
+                ]
+            }
+        })
+        Vue.component('elelist',{
+            render: function(createElement){
+                if(this.list.length){
+                    return createElement('ul', this.list.map(function(item){
+                        return createElement('li', item);
+                    }))
+                }else{
+                    return createElement('p', '列表为空');
+                }
+            },
+            props: {
+                list: {
+                    type: Array,
+                    default: function(){
+                        return [];
+                    }
+                }
+            }
+        });
+        new Vue({
+            el: '#app7',
+            data: {
+                list: []
+            },
+            methods: {
+                handleClick: function(){
+                    this.list = [
+                        '《vue.js实战》',
+                        '《JavaScript 高级程序设计》',
+                        '《JavaScript 语言精髓》'
+                    ];
+                }
+            }
+        })
+
+    //   用javascript代替模板v-model
+        Vue.component('elemodel',{
+            render: function(createElement){
+                var _this = this;
+                return createElement('div',[
+                    createElement('input',{
+                        domProps: {
+                            value: this.value
+                        },
+                        on: {
+                            input: function(event){
+                                _this.value = event.target.value;
+                            }
+                        }
+                    }),
+                    createElement('p', 'value:' + this.value)
+                ])
+            },
+            data: function(){
+                return {
+                    value: ''
+                }
+            }
+        });
+        new Vue({
+            el: "#app8"
+        })
+    </script>
+</body>
+</html>

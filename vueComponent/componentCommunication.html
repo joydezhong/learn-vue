@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue组件</title>
+    <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+<body>
+    <h1>父子组件通信</h1>
+    <div id="root">
+        <p>总数： {{ total }}</p>
+        <my-component
+            @increase="handleGetTotal"
+            @reduce="handleGetTotal"
+            ></my-component>
+    </div>
+    <hr>
+    <div id="app">
+        <p>总数：{{total}}</p>
+        <model-component v-model="total"></model-component>
+        <p>总数：{{total1}}</p>
+        <model-component @input="handleGetTotal"></model-component>
+    </div>
+    <hr>
+    <div id="app1">
+        <p>总数：{{total}}</p>
+        <me-component v-model="total"></me-component>
+        <button @click="handleReduce">-1</button>
+    </div>
+    <hr>
+    <h1>非父子组件通信</h1>
+    <div id="app2">
+        <p>实例下显示孙组件的内容：{{message}}</p>
+        <wrap-component>
+            <in-component></in-component>
+        </wrap-component>
+    </div>
+    <hr>
+    <h1>父链</h1>
+    <div id="app3">
+        <p>通过父链修改的数据：{{message}}</p>
+        <component-a></component-a>
+    </div>
+    <hr>
+    <h1>子组件索引</h1>
+    <div id="app4">
+        <button @click="handleRef">通过ref获取子组件实例</button>
+        <component-b ref="comA"></component-b>
+    </div>
+
+    <script>
+        // <!--父子组件通信-->
+        // 自定义事件
+        Vue.component('my-component', {
+            template: '<div>' +
+                '<button @click="handleIncrease">+1</button>' +
+                '<button @click="handleReduce">-1</button>' +
+            '</div>',
+            data: function(){
+                return {
+                    counter: 0
+                }
+            },
+            methods: {
+                handleIncrease: function(){
+                    this.counter++;
+                    this.$emit('increase', this.counter);
+                },
+                handleReduce: function(){
+                    this.counter--;
+                    this.$emit('reduce', this.counter);
+                }
+            }
+        });
+
+        new Vue({
+            el: '#root',
+            data: {
+                total: 0
+            },
+            methods: {
+                handleGetTotal: function(total){
+                    this.total = total;
+                }
+            }
+        })
+
+    //    使用v-model
+        Vue.component('model-component',{
+            template: '<button @click="handleClick">+1</button>',
+            data: function(){
+                return {
+                    counter: 0
+                }
+            },
+            methods: {
+                handleClick: function(){
+                    this.counter++;
+                    this.$emit('input', this.counter);
+                }
+            }
+        });
+
+        new Vue({
+            el: '#app',
+            data: {
+                total: 0,
+                total1: 0
+            },
+            methods: {
+                handleGetTotal: function(total){
+                    this.total1 = total;
+                }
+            }
+        });
+
+    //    自定义表单输入组件
+        Vue.component('me-component', {
+            props: ['value'],
+            template: '<input :value="value" @input="updateValue" />',
+            methods: {
+                updateValue: function(event){
+                    this.$emit('input', event.target.value);
+                }
+            }
+        });
+
+        new Vue({
+            el: '#app1',
+            data: {
+                total: 0
+            },
+            methods: {
+                handleReduce: function(){
+                    this.total--;
+                }
+            }
+        })
+
+    //  <!--非父子组件通信-->
+        // 借助中央事件总线bus
+        var bus = new Vue();
+
+        var Child = {
+            template: '<div><h2>这是内层孙组件</h2><button @click="handleEvent">孙按钮派发事件</button></div>',
+            methods: {
+                handleEvent: function(){
+                    bus.$emit('on-message', '来自孙组件的内容');
+                }
+            }
+        }
+
+        Vue.component('wrap-component',{
+            template: '<div><slot></slot>这是外层组件</div>',
+            components: {
+                'in-component': Child
+            }
+        });
+
+        new Vue({
+            el: '#app2',
+            data: {
+                message: ''
+            },
+            components: {
+                'in-component': Child
+            },
+            mounted: function(){
+                var _this = this;
+                bus.$on('on-message', function(msg){
+                    _this.message = msg;
+                })
+            }
+        })
+
+    //    父链$parent 子链$children
+        Vue.component('component-a',{
+            template: '<button @click="handleEvent">通过父链直接修改数据</button>',
+            methods: {
+                handleEvent: function(){
+                    this.$parent.message = '来自组件component-a的内容';
+                }
+            }
+        });
+
+        new Vue({
+            el: '#app3',
+            data: {
+                message: '默认数据，点击按钮被修改'
+            }
+        });
+
+    //    子组件索引
+        Vue.component('component-b', {
+            template: '<div>子组件</div>',
+            data: function(){
+                return {
+                    message: '子组件内容'
+                }
+            }
+        });
+
+        new Vue({
+            el: '#app4',
+            methods: {
+                handleRef: function(){
+                    //通过$refs来访问指定的实例
+                    var msg = this.$refs.comA.message;
+                    console.log(msg);
+                }
+            }
+        })
+    </script>
+</body>
+</html>
